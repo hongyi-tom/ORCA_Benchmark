@@ -1,6 +1,8 @@
 ### Import Packages
 import sys
 import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
 
 ### Extract diff signs from pre and post review code
 def extract_diffs(example):
@@ -31,7 +33,7 @@ def extract_change_type(example):
 
 ### Extract wrong change types
 def get_wrong_answers(example):
-    correct_answer = example.correct_answer
+    correct_answer = example.type_correct
     wrong_answers = set(["remove_only", "add_only", "modify"])
     wrong_answers.remove(correct_answer)
     return wrong_answers
@@ -39,8 +41,8 @@ def get_wrong_answers(example):
 ### Construct change type MCQA dataset
 def construct_mcqa_change_type(data):
     examples = data[['old','new','review']]
-    examples['correct_answer'] = examples.apply(lambda row: extract_change_type(row), axis=1)
-    examples['wrong_answer'] = examples.apply(lambda row: get_wrong_answers(row), axis=1)
+    examples['type_correct'] = examples.apply(lambda row: extract_change_type(row), axis=1)
+    examples['type_wrong'] = examples.apply(lambda row: get_wrong_answers(row), axis=1)
     return examples
 
 ### Main Function
@@ -50,7 +52,7 @@ def main():
     data = pd.read_json(data_dir, lines=True)
     change_type_mcqa = construct_mcqa_change_type(data)
     change_type_mcqa.to_json(output_dir,orient='records', lines=True)
-    print("### Change Type MCQA Constructed for ", sys.argv[1], "###")
+    print("### Change Type MCQA Constructed for {0} ###".format(sys.argv[1]))
     return
 
 if __name__ == "__main__":
