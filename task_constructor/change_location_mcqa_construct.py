@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import itertools
 import warnings
+import math
 warnings.filterwarnings("ignore")
 
 ### Extract ground truth changed lines for {delete_only/modify}, and remaining options set
@@ -54,7 +55,7 @@ def min_jaccard_similarity_multiple_sets(pool_size, set_size, num_sets):
 
     # Calculate overlap if the pool is too small to form disjoint sets
     overlap = total_required_elements - pool_size
-    max_intersection_per_pair = max(1, overlap // num_sets)  # Distribute overlap across pairs
+    max_intersection_per_pair = max(1, math.ceil(overlap/num_sets))  # Distribute overlap across pairs
     union_per_pair = 2 * set_size - max_intersection_per_pair
 
     # Jaccard similarity for each pair of sets
